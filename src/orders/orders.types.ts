@@ -1,7 +1,12 @@
+import { Item } from '../items/items.types';
+import { User } from '../users/users.types';
+
 export interface Order {
   id: string;
   userId: string;
+  user: User;
   itemIds: string[];
+  items: Item[];
   address: string;
 }
 

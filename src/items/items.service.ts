@@ -29,4 +29,16 @@ export class ItemsService {
         .on('error', (err) => reject(err));
     });
   }
+
+  public async getItemById(id: string): Promise<Item> {
+    const items = await this.getItems();
+    const result = items.items[id];
+    return result;
+  }
+
+  public async getItemsByIds(ids: string[]): Promise<Item[]> {
+    const items = await this.getItems();
+    const result = ids.map((id) => items.items[id]);
+    return result;
+  }
 }

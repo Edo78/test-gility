@@ -29,4 +29,10 @@ export class UsersService {
         .on('error', (err) => reject(err));
     });
   }
+
+  public async getUserById(id: string): Promise<User> {
+    const users = await this.getUsers();
+    const result = users.users[id];
+    return result;
+  }
 }

@@ -25,25 +25,52 @@ export class OrdersService {
     return new Promise((resolve, reject) => {
       readStream
         .pipe(parser)
-        .on('data', (data: Order) => {
+        .on('data', async (data: Order) => {
           data.itemIds = JSON.parse((data.itemIds as unknown) as string);
-          orders[data.id] = data;
-          // add index for userId so that we can quickly find orders by userId
+
           if (!indexes['users'][data.userId]) {
             indexes['users'][data.userId] = [];
           }
           indexes['users'][data.userId].push(data.id);
-          // add index for itemIds so that we can quickly find orders by itemId
+
           data.itemIds.forEach((itemId) => {
             if (!indexes['items'][itemId]) {
               indexes['items'][itemId] = [];
             }
             indexes['items'][itemId].push(data.id);
           });
+
+          orders[data.id] = data;
           total++;
         })
-        .on('end', () => resolve({ orders, indexes, total }))
+        .on('end', async () => {
+          resolve({ orders, indexes, total });
+        })
         .on('error', (err) => reject(err));
     });
+  }
+
+  public async getOrderById(id: string): Promise<Order> {
+    const orders = await this.getOrders();
+    const result = orders.orders[id];
+    return result;
+  }
+
+  public async getOrdersByUserId(userId: string): Promise<Order[]> {
+    const orders = await this.getOrders();
+    const orderIds = orders.indexes.users[userId];
+    const result = orderIds
+      ? orderIds.map((orderId) => orders.orders[orderId])
+      : [];
+    return result;
+  }
+
+  public async getOrdersByItemId(itemId: string): Promise<Order[]> {
+    const orders = await this.getOrders();
+    const orderIds = orders.indexes.items[itemId];
+    const result = orderIds
+      ? orderIds.map((orderId) => orders.orders[orderId])
+      : [];
+    return result;
   }
 }

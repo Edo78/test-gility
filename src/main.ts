@@ -7,12 +7,10 @@ import { NestFactory } from '@nestjs/core';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // add swagger support
   const options = new DocumentBuilder()
-    .setTitle('NestJS Users API')
-    .setDescription('The users API description')
+    .setTitle('Exercise API')
+    .setDescription('API for Gility exercise')
     .setVersion('1.0')
-    .addTag('users')
     .build();
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('api', app, document);
